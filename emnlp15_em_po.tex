@@ -33,30 +33,27 @@
 
 \title{Extraction and generalisation of variables from scientific publications}
 
-\author{First Author \\
-  Affiliation / Address line 1 \\
-  Affiliation / Address line 2 \\
-  Affiliation / Address line 3 \\
-  {\tt email@domain} \\\And
-  Second Author \\
-  Affiliation / Address line 1 \\
-  Affiliation / Address line 2 \\
-  Affiliation / Address line 3 \\
-  {\tt email@domain} \\}
-
+\author{Erwin Marsi, Pinar \"Ozt\"urk\\
+  Department of Computer and Information Science\\
+  Norwegian University of Science and Technology (NTNU)\\
+  {\tt \{emarsi,pinar\}@idi.ntnu.no}}
+  
 \date{}
 
 \begin{document}
 \maketitle
 
 \begin{abstract}
-Text mining from Earth science literature is significantly different from biomedical text mining and therefore requires distinct approaches and methods.
-Our approach aims at automatically locating and extracting \emph{variables} and their direction of variation: \emph{increasing}, \emph{decreasing} or just \emph{changing}. 
+
+Scientific theories and models in Earth science typically involve changing \emph{variables} and their complex interactions, including correlations, causal relations and chains of positive/negative feedback loops. 
+Variables tend to be complex rather than atomic entities and expressed as noun phrases containing multiple modifiers, e.g. \emph{oxygen depletion in the upper 500 m of the ocean or timing} and \emph{magnitude of surface temperature evolution in the Southern Hemisphere in deglacial proxy records}.
+Text mining from Earth science literature is therefore significantly different from biomedical text mining and requires different approaches and methods.
+Our approach aims at automatically locating and extracting variables and their direction of variation: \emph{increasing}, \emph{decreasing} or just \emph{changing}.
 Variables are initially extracted by matching tree patterns onto the syntax trees of the source texts.
 Next, variables are generalised in order to enhance their similarity, facilitating hierarchical search and inference.
 This generalisation is accomplished by progressive pruning of syntax trees using a set of tree transformation operations.
 Text mining results are presented as a browsable variable hierarchy which allows users to inspect all mentions of a particular variable type in the text as well as any generalisations or specialisations.
-The approach is demonstrated on a corpus of 10k abstracts of Nature publications.
+The approach is demonstrated on a corpus of 10k abstracts of Nature publications in the field of Marine science.
 We discuss experiences with this early prototype and outline a number of possible improvements and directions for future research.
 \end{abstract}
 
@@ -75,7 +72,7 @@ In short, there is a whole infrastructure supporting biomedical text mining \cit
 Text mining is now spreading out to other scientific disciplines, notably in the humanities and social sciences \cite{oconnor2011}, holding the promise for knowledge discovery from large text collections.
 Our own research targets text mining in the field of Earth science, more specifically in Oceanography or Marine science, with a focus on climate change.
 As text mining efforts in this area are extremely rare \cite{ekstrom2008exploratory,vossen-EtAl:2010:ONTOLEX,Zhang2013GeoDeepDive,marsi2014towards,aamot2014literature}, it is not surprising that a corresponding infrastructure is mostly lacking.
-In addition, however, we found that due to significant differences between the conceptual frameworks of biomedicine and marine science, simply "porting" the biomedical text mining infrastructure to another domain will not suffice.
+In addition, however, we found that due to significant differences between the conceptual frameworks of biomedicine and marine science, simply ``porting" the biomedical text mining infrastructure to another domain will not suffice.
 
 One major difference is that the biomedical entities of interest are relatively well defined -- genes, proteins, organisms, species, drugs, diseases, etc. -- and typically expressed as proper nouns.
 In contrast, defining the entities of interest in marine science turns out to be much harder.
@@ -127,7 +124,7 @@ Decrease  &  \vspace{-11pt}
 \end{small}
 \end{center}
 \label{tab:variables}
-\vspace{-5mm}
+\vspace{-3mm}
 \end{table*}%
 
 
@@ -151,10 +148,11 @@ Lemmatised parse trees were obtained by substituting terminals with their lemmas
 The resulting new corpus contains 9,586 article abstracts, 59,787 sentences and approximately 4M tokens.
 
 Methods for information extraction broadly rely on either knowledge-based pattern matching or supervised machine learning \cite{Sarawagi:2008:IE:1498844.1498845}.
+Although ML approaches are currently dominant in IE research, rule-based systems have several advantages, including: (a) the rules are interpretable and thus suitable for rapid development and domain transfer; and (b) humans and machines can contribute to the same model \cite{Valenzuela-Escarcega:2015aa}.
 %Both approaches have their advantages and disadvantages, but both require a similar investment of time and effort in either writing patterns or manual annotation of training examples. 
 %Our initial experiments suggested somewhat better performance was obtained with pattern matching.     
 %In addition,
-Patterns seem more flexible for exploring the domain, whereas the manual annotation required for ML demands more commitment to a precise definition of entities, relations and events, which we found hard to achieve at this stage.
+In our case, patterns offered more flexibility in exploring the domain, whereas the manual annotation required for ML demands more commitment to a precise definition of entities, relations and events, which we found hard to achieve at this stage.
 %Hence the choice for pattern matching on syntax trees is pragmatic rather than dogmatic.
 Tree pattern matching is applied to lemmatised syntax trees using the Tregex engine \cite{Levy2006}, which supports a compact language for writing regular expressions over trees; 
 see Table~\ref{tab:variables} for examples of patterns and matching phrases.
@@ -168,13 +166,10 @@ The patterns cover expression as a main verb (\emph{X increases, something incre
 The total number of patterns is 320: 90 for change, 122 for increase, 108 for decrease (see supplements for a full list).
 The total number of matched variables in the corpus is 21,817: 9,352 for change, 7,400 for increase and 5,065 for decrease.
 
-
-% *** INCLUDE IN FINAL VERSION
-% Some variables do not exactly correspond to a node, i.e., not every variable is a valid syntactic phrase.
-% For instance, the pattern for Change in Table~\ref{tab:variables} matches the NP \emph{the annual, Milankovitch and continuum % temperature variability}, whereas the actual variable is \emph{the annual, Milankovitch and continuum temperature}.
-% This is corrected in a post-processing step that deletes the \emph{variability} node from the extracted subtree and substring.
-% For this purpose, the pattern contains an assignment of the name d1 to the node directly dominating the lemma \emph{variability} % ( \verb|/NN/=d1 < variability|)), allowing a corresponding tree operation to delete this node.
-%, which is implemented using the Tsurgeon counterpart of Tregex.
+Some variables do not exactly correspond to a node, i.e., not every variable is a valid syntactic phrase.
+For instance, the pattern for Change in Table~\ref{tab:variables} matches the NP \emph{the annual, Milankovitch and continuum temperature variability}, whereas the actual variable is \emph{the annual, Milankovitch and continuum temperature}.
+This is corrected in a post-processing step that deletes the \emph{variability} node from the extracted subtree and substring.
+For this purpose, the pattern contains an assignment of the name d1 to the node directly dominating the lemma \emph{variability} (\verb|/NN/=d1 < variability|)), allowing a corresponding tree operation to delete this node, which is implemented using the Tsurgeon counterpart of Tregex.
  
 %====================================================================================
 \section{Variable generalisation}
@@ -205,7 +200,7 @@ In Table~\ref{tab:variables}, for example,  both \emph{the annual, Milankovitch 
 However, many generalised variables are unique and thus serve no purpose in relating variables.
 Retaining only original variables and generalised variables with at least two mentions yields a total of 17,613 variable types. % = len(var_type_index)
 
-\begin{figure}[tbh]
+\begin{figure}[tb]
 \begin{small}
 \begin{tabbing}
 ~~~ \= the annual , Milankovitch and continuum temperature \\
@@ -219,7 +214,7 @@ Retaining only original variables and generalised variables with at least two me
  \>            \> \> \>        \textsc{Strip Premod 1} $\rightarrow$  temperature \\
 \end{tabbing}
 \end{small}
-\vspace{-8mm}
+%\vspace{-8mm}
 \caption{Example of generalisation by iterative tree pruning}
 \label{fig:gen}
 \end{figure}
@@ -234,10 +229,9 @@ Retaining only original variables and generalised variables with at least two me
 %\fbox{
   \includegraphics[scale=0.54,angle=-90,clip=true,trim=56mm 1mm 53mm 0]{screenshot.pdf}
   %}
-  \vspace{-4mm}
   \caption{Partial screenshot of user interface showing variable type hierarchy (left) and linked variable mentions in text (right)
   where colour encodes change (green), increase (red) or decrease (blue)}
-%\vspace{-4pt}
+\vspace{4pt}
 \label{fig:ui}  
 \end{figure*}
 
@@ -254,10 +248,12 @@ This setup allows users to quickly explore variables, for example, finding abstr
 %====================================================================================
 
 We have argued that the paradigm established in biomedical text mining does not transfer directly to other scientific domains like Earth science.
-A new approach was proposed for extracting variables and their direction of variation ( increasing, decreasing or just changing), focusing on events rather than entities.
+A new approach was proposed for extracting variables and their direction of variation (increasing, decreasing or just changing), focusing on events rather than entities.
 A generic system based on syntactic pattern matching and tree transformations was described for extraction and subsequent generalisation of variable events.
 Text mining results are presented in an innovative way as a browsable hierarchy ranging from most general to most specific variables, with links to their textual instances.
-In addition, a first text corpus in marine science was produced, including automatically annotated change events. 
+In addition, a first text corpus in marine science was produced, including automatically annotated change events.
+Our corpus as well as the extracted variables are publicly available\footnote{\url{https://dl.dropboxusercontent.com/u/2370516/emnlp15_corpus.zip}}.
+We think our approach to extraction is generalisable to other domains where the entities of interest are common nouns or complex noun phrases rather the proper nouns, e.g. in nanotechnology \& nanoscience \cite{Kostoff20071733}.
 
 To the best of our knowledge, there are currently no other systems for text mining in Earth science which we can compare our results with, nor are there any benchmark data sets for our task.
 Most related is \cite{marsi2014towards}, but their definition of variables is more restricted and their pilot corpus is too small for evaluation purposes.
@@ -266,21 +262,19 @@ Reporting on our ongoing work now, future work will include an evaluation by ask
 %There is certainly a downside to relying on syntax tree matching. 
 Preliminary observations indicate that most problems originate from syntactic parsing errors, in particular well-known ambiguities in coordination and PP-attachment.
 As a result, patterns may either fail to match or match unintentionally, yielding incomplete or incoherent variables.     
-%Since many sentences are long, complex and domain-specific, it comes as no surprise that the parser often fails to correctly resolve well-known ambiguities in coordination and PP-attachment.
-With pattern matching on strings and/or POS tags, however, determining boundaries of variables would be problematic.
-%False positives also occur because of different semantics of the same pattern, e.g. \emph{change in western Europe} is unlikely to mean literally that Europe is changing, neither does \emph{changes in less than a few thousand years} imply that past years are changing.
-%At the same time, false negatives are beyond the possibilities of pattern matching.
-%For instance, ... 
-%Also, 
-%Variation may also be entailed rather than explicitly stated.
-%For example,  \emph{ocean acidification} entails increasing acidity of ocean water and  \emph{Arctic warming} entails increasing %temperature in the Arctic region.
-%This is closely related to recognising textual entailment \cite{AndroutsopoulosMalakasiotis:2010,DaganGlickmanMagnini:2006}, requiring inference in combination with domain knowledge.
-%A related matter is negation (\emph{no increase in global temperature}), which can even be expressed in non-trivial ways (\emph{temperature remained constant}) \cite{morante2009learning}.
-%
-%Variables can be recursive or embedded, expressing ``a change of a change''.  
-%For example, \emph{reduce subseasonal temperature variance} implies both a change in temperature as well as a %decrease of this temperature change.
-%The current visualisation is insufficient in these cases, as HTML browsers cannot render a link in a link.
-%
+Since many sentences are long, complex and domain-specific, it comes as no surprise that the parser often fails to correctly resolve well-known ambiguities in coordination and PP-attachment.
+However, with pattern matching on strings and/or POS tags instead of syntax trees, determining boundaries of variables would be problematic.
+False positives also occur because of different semantics of the same pattern, e.g. \emph{change in western Europe} is unlikely to mean literally that the European continent is changing, neither does \emph{changes in less than a few thousand years} imply that past years are changing.
+
+At the same time, certain false negatives are beyond the power of pattern matching. 
+For instance, variation may be entailed rather than explicitly stated:
+\emph{ocean acidification} entails increasing acidity of ocean water and \emph{Arctic warming} entails increasing temperature in the Arctic region.
+This is closely related to textual entailment \cite{AndroutsopoulosMalakasiotis:2010,DaganGlickmanMagnini:2006}, requiring inference in combination with domain knowledge.
+A related matter is negation (\emph{no increase in global temperature}), which can even be expressed in non-trivial ways (\emph{temperature remained constant}) \cite{morante2009learning}.
+Variables were also found to be recursive or embedded, expressing ``a change of a change''.  
+For example, \emph{reduce subseasonal temperature variance} implies both a change in temperature as well as a decrease of this temperature change.
+The current visualisation falls short in these cases, as HTML browsers cannot render a link in a link.
+
 Generalisation by tree pruning appears to work quite well as long as the parse is correct.
 However, pruning by itself is insufficient and should be supplemented with other methods.
 For instance, linking named entities like species, chemicals or locations to unique concepts in appropriate ontologies/taxonomies would support generalisations such as \emph{iron} is a \emph{metal} or a \emph{diatom} is a \emph{plankton}. 
@@ -290,11 +284,16 @@ Given suitable training data,  ML approaches may therefore be applied, e.g. \cit
 %We are fully aware that in some contexts generalisation is not truth preserving, but to what extent this is a serious problem for knowledge discovery remains to be studied. 
 %One important point for future work is therefore evaluation by asking domain exports to judge the correctness of extracted variables as well as their generalisations in the given context. 
 
-%The most general variables are probably too generic to be of much help to a user, e.g. \emph{concentration}, \emph{rate}, \emph{level}, etc.
-%Likewise, \emph{climate} is by far the most frequent changing variable due to the frequently occurring collocation \emph{climate change}.
-%In addition, variables often contain references to previously mentioned entities -- anaforic \emph{it} being the ultimate example of this -- suggesting a need for co-reference resolution \cite{Miwa01072012}.
- 
-Extraction of variables provides a basis for building systems supporting knowledge discovery.
+The most general variables are probably too generic to be of much help to a user, e.g. \emph{concentration}, \emph{rate}, \emph{level}, etc.
+Likewise, \emph{climate} is by far the most frequent changing variable due to the frequently occurring collocation \emph{climate change}.
+In addition, variables often contain references to previously mentioned entities -- anaphoric \emph{it} being the ultimate example of this -- suggesting a need for co-reference resolution \cite{Miwa01072012}.
+
+Yet another future direction is to structurally model variables as opposed to a possibly over-simplified generalisation. 
+Similar to nominal SRL, one can define relevant arguments including frequency (e.g.
+annual), temporal scope (between 1958 and 2010), location, etc.
+The most generic variables mentioned earlier in fact provide a good basis for such modelling.
+
+Extraction and generalisation of variables provides a basis for building systems supporting knowledge discovery.
 One approach is mining associations between variables frequently co-occurring in the same sentence or abstract \cite{Jenssen:2001aa,Hashimoto2012Excitatory}) 
 More precise results can be expected by extracting causal relations between change events \cite{chang2005causal,blanco2008causal,Raja2013PPInterFindera}.
 Pairs of change events -- causally or otherwise associated -- obtained from different publications can be chained together, possibly in combination with domain knowledge, in order to generate new hypotheses, as pioneered in the work on literature-based knowledge discovery \cite{Swanson1986Fish,Swa88,Swanson1997Interactive}.
@@ -305,9 +304,12 @@ Automatic extraction and generalisation of variables from scientific publication
 % - scale up to to full papers
 %
 
-% \section*{Acknowledgments}
+\section*{Acknowledgments}
 
-\vfill
+Financial aid from the European Commission (OCEAN-CERTAIN, FP7-ENV-2013-6.1-1; no: 603773) is gratefully acknowledged. 
+We thank Murat Van Ardelan for sharing his knowledge of Marine science and the anonymous reviewers for their valuable comments. 
+
+
 
 \FloatBarrier 
 \pagebreak
